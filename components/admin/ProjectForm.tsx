@@ -1,0 +1,225 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { IProject } from "@/models/Project";
+import ImageUploadField from "./ImageUploadField";
+
+type Props = {
+  initial?: Partial<IProject>;
+  projectId?: string;
+};
+
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+export default function ProjectForm({ initial, projectId }: Props) {
+  const router = useRouter();
+  const isEdit = Boolean(projectId);
+
+  const [title, setTitle] = useState(initial?.title || "");
+  const [slug, setSlug] = useState(initial?.slug || "");
+  const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
+  const [category, setCategory] = useState(initial?.category || "");
+  const [coverImage, setCoverImage] = useState(initial?.coverImage || "");
+  const [gallery, setGallery] = useState((initial?.gallery || []).join("\n"));
+  const [description, setDescription] = useState(initial?.description || "");
+  const [problem, setProblem] = useState(initial?.problem || "");
+  const [solution, setSolution] = useState(initial?.solution || "");
+  const [techStack, setTechStack] = useState((initial?.techStack || []).join(", "));
+  const [liveUrl, setLiveUrl] = useState(initial?.liveUrl || "");
+  const [githubUrl, setGithubUrl] = useState(initial?.githubUrl || "");
+  const [featured, setFeatured] = useState(initial?.featured || false);
+  const [order, setOrder] = useState(initial?.order ?? 0);
+
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+
+    const payload = {
+      title,
+      slug: slug || slugify(title),
+      category,
+      coverImage,
+      gallery: gallery
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      description,
+      problem,
+      solution,
+      techStack: techStack
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      liveUrl,
+      githubUrl,
+      featured,
+      order: Number(order)
+    };
+
+    try {
+      const res = await fetch(isEdit ? `/api/projects/${projectId}` : "/api/projects", {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const body = await res.json();
+
+      if (!res.ok) {
+        throw new Error(body.error?.formErrors?.[0] || body.error || "Failed to save project.");
+      }
+
+      router.push("/admin/projects");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save project.");
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-form" onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          required
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (!slugTouched) setSlug(slugify(e.target.value));
+          }}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="slug">Slug (URL)</label>
+        <input
+          id="slug"
+          type="text"
+          required
+          value={slug}
+          onChange={(e) => {
+            setSlug(slugify(e.target.value));
+            setSlugTouched(true);
+          }}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="category">Category</label>
+        <input
+          id="category"
+          type="text"
+          required
+          placeholder="e.g. Healthcare, E-commerce"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+      </div>
+
+      <ImageUploadField label="Cover image" value={coverImage} onChange={setCoverImage} />
+
+      <div>
+        <label htmlFor="gallery">Gallery image URLs (one per line, optional)</label>
+        <textarea
+          id="gallery"
+          value={gallery}
+          onChange={(e) => setGallery(e.target.value)}
+          placeholder={"https://.../screenshot-1.png\nhttps://.../screenshot-2.png"}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          required
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="problem">Client / Problem (optional)</label>
+        <textarea id="problem" value={problem} onChange={(e) => setProblem(e.target.value)} />
+      </div>
+
+      <div>
+        <label htmlFor="solution">Solution (optional)</label>
+        <textarea id="solution" value={solution} onChange={(e) => setSolution(e.target.value)} />
+      </div>
+
+      <div>
+        <label htmlFor="techStack">Tech stack (comma-separated)</label>
+        <input
+          id="techStack"
+          type="text"
+          placeholder="Next.js, MongoDB, Express"
+          value={techStack}
+          onChange={(e) => setTechStack(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="liveUrl">Live URL (optional)</label>
+        <input
+          id="liveUrl"
+          type="url"
+          value={liveUrl}
+          onChange={(e) => setLiveUrl(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="githubUrl">GitHub URL (optional)</label>
+        <input
+          id="githubUrl"
+          type="url"
+          value={githubUrl}
+          onChange={(e) => setGithubUrl(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="order">Display order (lower = first)</label>
+        <input
+          id="order"
+          type="number"
+          value={order}
+          onChange={(e) => setOrder(Number(e.target.value))}
+        />
+      </div>
+
+      <div className="admin-checkbox-row">
+        <input
+          id="featured"
+          type="checkbox"
+          checked={featured}
+          onChange={(e) => setFeatured(e.target.checked)}
+        />
+        <label htmlFor="featured" style={{ margin: 0, textTransform: "none", letterSpacing: 0 }}>
+          Featured (shown on homepage)
+        </label>
+      </div>
+
+      {error && <p style={{ color: "#c0392b", fontSize: "13px" }}>{error}</p>}
+
+      <button type="submit" className="button button-dark" disabled={saving}>
+        {saving ? "Saving..." : isEdit ? "Save changes" : "Create project"}
+      </button>
+    </form>
+  );
+}
