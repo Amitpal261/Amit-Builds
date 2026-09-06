@@ -1990,6 +1990,20 @@ section {
   grid-column: auto;
 }
 
+.detail-gallery-count-1 {
+  column-count: 1;
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.detail-gallery-count-2 {
+  column-count: 2;
+}
+
+.detail-gallery-count-3 {
+  column-count: 2;
+}
+
 .detail-gallery-item img {
   width: 100%;
   height: auto;

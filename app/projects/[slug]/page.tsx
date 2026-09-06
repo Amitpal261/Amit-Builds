@@ -108,7 +108,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           )}
 
           {project.gallery?.length > 0 && (
-            <div className="detail-gallery">
+            <div className={`detail-gallery detail-gallery-count-${Math.min(project.gallery.length, 4)}`}>
               {project.gallery.map((img, i) => (
                 <div
                   key={i}
