@@ -1,4 +1,5 @@
 import Link from "next/link";
+import InteractiveBrand from "@/components/InteractiveBrand";
 
 export default function Hero() {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8929682324";
@@ -7,6 +8,10 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="container hero-inner">
+        <div className="hero-brand-visual">
+          <InteractiveBrand />
+        </div>
+
         <div className="hero-kicker">
           <span />
           Web Developer · Delhi NCR
