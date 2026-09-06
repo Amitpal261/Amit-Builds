@@ -54,12 +54,13 @@ export default async function ProjectDetailPage({ params }: Props) {
             ))}
           </div>
 
-          <div className="project-image" style={{ aspectRatio: "16 / 9" }}>
+          <div className="project-image detail-cover-image">
             <Image
               src={project.coverImage}
               alt={project.title}
               width={1600}
               height={900}
+              sizes="(max-width: 850px) 100vw, 70vw"
               unoptimized
             />
           </div>
@@ -116,8 +117,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                   <Image
                     src={img}
                     alt={`${project.title} screenshot ${i + 1}`}
-                    fill
-                    sizes="(max-width: 850px) 100vw, 50vw"
+                    width={1200}
+                    height={800}
+                    sizes="(max-width: 480px) 100vw, (max-width: 850px) 50vw, (max-width: 1100px) 33vw, 25vw"
                     unoptimized
                   />
                 </div>
