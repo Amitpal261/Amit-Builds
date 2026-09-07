@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { signSession, SESSION_COOKIE } from "@/lib/auth";
 
+function getEnvValue(name: string) {
+  const value = process.env[name]?.trim();
+  if (!value) return "";
+  return value.replace(/^(?:\"|')|(?:\"|')$/g, "");
+}
+
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminEmail = getEnvValue("ADMIN_EMAIL");
+  const adminPasswordHash = getEnvValue("ADMIN_PASSWORD_HASH");
 
   if (!adminEmail || !adminPasswordHash) {
     return NextResponse.json(
