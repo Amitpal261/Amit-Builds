@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 
 // NOTE: For simplicity (and to work out-of-the-box with zero external setup),
-// uploaded images are converted to base64 data URIs and stored directly wherever
+// uploaded media is converted to base64 data URIs and stored directly wherever
 // you save them (e.g. a project's coverImage field in MongoDB).
 // This is fine for a small portfolio, but for many/large images consider
 // switching to a real object store (Vercel Blob, Cloudinary, S3, etc.) —
@@ -24,12 +24,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No file uploaded." }, { status: 400 });
   }
 
-  if (!file.type.startsWith("image/")) {
-    return NextResponse.json({ error: "Only image files are allowed." }, { status: 400 });
+  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+    return NextResponse.json({ error: "Only image and video files are allowed." }, { status: 400 });
   }
 
   if (file.size > MAX_SIZE_BYTES) {
-    return NextResponse.json({ error: "Image must be smaller than 4MB." }, { status: 400 });
+    return NextResponse.json({ error: "Media must be smaller than 4MB." }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();

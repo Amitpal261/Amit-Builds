@@ -7,6 +7,10 @@ import { getProjectBySlug } from "@/lib/data";
 
 type Props = { params: { slug: string } };
 
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg)(?:$|[?#])/i.test(url);
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getProjectBySlug(params.slug);
   if (!project) return { title: "Project not found — Amit" };
@@ -114,14 +118,25 @@ export default async function ProjectDetailPage({ params }: Props) {
                   key={i}
                   className={`detail-gallery-item${i === 0 ? " detail-gallery-featured" : ""}`}
                 >
-                  <Image
-                    src={img}
-                    alt={`${project.title} screenshot ${i + 1}`}
-                    width={1200}
-                    height={800}
-                    sizes="(max-width: 480px) 100vw, (max-width: 850px) 50vw, (max-width: 1100px) 33vw, 25vw"
-                    unoptimized
-                  />
+                  {isVideoUrl(img) ? (
+                    <video
+                      src={img}
+                      controls
+                      muted
+                      playsInline
+                      preload="metadata"
+                      aria-label={`${project.title} video ${i + 1}`}
+                    />
+                  ) : (
+                    <Image
+                      src={img}
+                      alt={`${project.title} screenshot ${i + 1}`}
+                      width={1200}
+                      height={800}
+                      sizes="(max-width: 480px) 100vw, (max-width: 850px) 50vw, (max-width: 1100px) 33vw, 25vw"
+                      unoptimized
+                    />
+                  )}
                 </div>
               ))}
             </div>

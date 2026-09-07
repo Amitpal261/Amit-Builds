@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IProject } from "@/models/Project";
 import ImageUploadField from "./ImageUploadField";
+import GalleryUploadField from "./GalleryUploadField";
 
 type Props = {
   initial?: Partial<IProject>;
@@ -133,12 +134,17 @@ export default function ProjectForm({ initial, projectId }: Props) {
       <ImageUploadField label="Cover image" value={coverImage} onChange={setCoverImage} />
 
       <div>
-        <label htmlFor="gallery">Gallery image URLs (one per line, optional)</label>
+        <label htmlFor="gallery">Gallery image or video URLs (one per line, optional)</label>
+        <GalleryUploadField
+          onUpload={(urls) => {
+            setGallery((current) => [...current.split("\n"), ...urls].filter(Boolean).join("\n"));
+          }}
+        />
         <textarea
           id="gallery"
           value={gallery}
           onChange={(e) => setGallery(e.target.value)}
-          placeholder={"https://.../screenshot-1.png\nhttps://.../screenshot-2.png"}
+          placeholder={"https://.../screenshot-1.png\nhttps://.../demo.mp4"}
         />
       </div>
 
