@@ -62,8 +62,8 @@ export default async function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {recentLeads.map((lead: any) => (
-                <tr key={lead._id}>
+              {recentLeads.map((lead) => (
+                <tr key={String(lead._id)}>
                   <td>{lead.name}</td>
                   <td>{lead.email}</td>
                   <td>{lead.budget || "—"}</td>

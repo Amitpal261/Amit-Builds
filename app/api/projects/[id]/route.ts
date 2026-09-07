@@ -29,8 +29,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
     });
     if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(project);
-  } catch (err: any) {
-    if (err?.code === 11000) {
+  } catch (err: unknown) {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === 11000) {
       return NextResponse.json({ error: "A project with this slug already exists." }, { status: 409 });
     }
     return NextResponse.json({ error: "Failed to update project." }, { status: 500 });

@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
   try {
     const project = await Project.create(parsed.data);
     return NextResponse.json(project, { status: 201 });
-  } catch (err: any) {
-    if (err?.code === 11000) {
+  } catch (err: unknown) {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === 11000) {
       return NextResponse.json({ error: "A project with this slug already exists." }, { status: 409 });
     }
     return NextResponse.json({ error: "Failed to create project." }, { status: 500 });

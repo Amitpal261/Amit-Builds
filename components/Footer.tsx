@@ -36,7 +36,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="footer-button footer-button-dark"
             >
-              Let's work together ↗
+              Let&apos;s work together ↗
             </a>
 
             <Link href="/contact" className="footer-button footer-button-light">

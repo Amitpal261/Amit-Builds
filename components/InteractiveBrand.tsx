@@ -37,7 +37,7 @@ export default function InteractiveBrand() {
     let animationFrame = 0;
     let width = 0;
     let height = 0;
-    let pointer = { x: 0, y: 0, targetX: 0, targetY: 0, active: false };
+    const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, active: false };
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();

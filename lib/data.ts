@@ -4,8 +4,8 @@ import Service, { IService } from "@/models/Service";
 import Testimonial, { ITestimonial } from "@/models/Testimonial";
 
 /** Converts Mongoose lean() docs into plain, JSON-serializable objects for RSC. */
-function serialize<T>(doc: any): T {
-  return JSON.parse(JSON.stringify(doc));
+function serialize<T>(doc: unknown): T {
+  return JSON.parse(JSON.stringify(doc)) as T;
 }
 
 export async function getProjects(opts: { featuredOnly?: boolean } = {}): Promise<IProject[]> {
