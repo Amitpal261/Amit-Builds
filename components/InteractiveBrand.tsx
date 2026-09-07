@@ -41,6 +41,8 @@ export default function InteractiveBrand() {
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();
+      if (bounds.width === 0 || bounds.height === 0) return;
+
       const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO);
       width = bounds.width;
       height = bounds.height;
@@ -54,24 +56,28 @@ export default function InteractiveBrand() {
       const offsetY = (height - (rows - 1) * DOT_SPACING) / 2;
       const titleSize = Math.max(26, Math.min(54, width * 0.16));
 
-      textCanvas.width = Math.ceil(width);
-      textCanvas.height = Math.ceil(height);
+      const sourceWidth = Math.ceil(width);
+      const sourceHeight = Math.ceil(height);
+      if (sourceWidth < 1 || sourceHeight < 1) return;
+
+      textCanvas.width = sourceWidth;
+      textCanvas.height = sourceHeight;
       textContext.clearRect(0, 0, width, height);
       textContext.fillStyle = "#111";
       textContext.font = `700 ${titleSize}px Arial, sans-serif`;
       textContext.textAlign = "center";
       textContext.textBaseline = "middle";
       textContext.fillText(BRAND_NAME, width / 2, height * 0.45);
-      const textPixels = textContext.getImageData(0, 0, Math.ceil(width), Math.ceil(height)).data;
+      const textPixels = textContext.getImageData(0, 0, sourceWidth, sourceHeight).data;
 
       dots = [];
       for (let row = 0; row < rows; row += 1) {
         for (let column = 0; column < columns; column += 1) {
           const x = offsetX + column * DOT_SPACING;
           const y = offsetY + row * DOT_SPACING;
-          const pixelX = Math.min(Math.ceil(width) - 1, Math.max(0, Math.floor(x)));
-          const pixelY = Math.min(Math.ceil(height) - 1, Math.max(0, Math.floor(y)));
-          const alpha = textPixels[(pixelY * Math.ceil(width) + pixelX) * 4 + 3] / 255;
+          const pixelX = Math.min(sourceWidth - 1, Math.max(0, Math.floor(x)));
+          const pixelY = Math.min(sourceHeight - 1, Math.max(0, Math.floor(y)));
+          const alpha = textPixels[(pixelY * sourceWidth + pixelX) * 4 + 3] / 255;
           dots.push({ x, y, offsetX: 0, offsetY: 0, brandWeight: alpha });
         }
       }
