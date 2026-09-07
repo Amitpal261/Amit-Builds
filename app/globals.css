@@ -2596,7 +2596,12 @@ section {
     transform: translate(-50%, -10px) scale(0.97);
   }
 
-  body.scrolled .floating-nav,
+  body.scrolled .floating-nav {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -10px) scale(0.97);
+  }
+
   .floating-nav.mobile-open {
     opacity: 1;
     pointer-events: auto;
