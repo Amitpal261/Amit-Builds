@@ -5,7 +5,7 @@ import { signSession, SESSION_COOKIE } from "@/lib/auth";
 function getEnvValue(name: string) {
   const value = process.env[name]?.trim();
   if (!value) return "";
-  return value.replace(/^(?:\"|')|(?:\"|')$/g, "");
+  return value.replace(/\\\$/g, "$").replace(/^(?:\"|')|(?:\"|')$/g, "");
 }
 
 export async function POST(req: NextRequest) {
