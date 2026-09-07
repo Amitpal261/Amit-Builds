@@ -1227,6 +1227,9 @@ section {
 .project-image img {
   width: 100%;
   height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
 
   padding: 0;
 
@@ -2701,6 +2704,8 @@ section {
   }
 
   .project-image {
+    grid-column: 2 / -1;
+    aspect-ratio: 16 / 10;
     margin-top: 4px;
   }
 
@@ -2836,8 +2841,14 @@ section {
   /* ---------- DETAIL ---------- */
 
   .detail-hero {
-    padding-top: 90px;
-    padding-bottom: 45px;
+    padding-top: 108px;
+    padding-bottom: 64px;
+  }
+
+  .detail-hero .section-title {
+    max-width: 560px;
+    font-size: clamp(3rem, 13vw, 5rem);
+    line-height: 0.98;
   }
 
   .detail-gallery {
@@ -2963,6 +2974,11 @@ section {
 
   .project-info h3 {
     font-size: 2rem;
+  }
+
+  .project-image {
+    grid-column: 2;
+    aspect-ratio: 4 / 3;
   }
 
   .section-title {
