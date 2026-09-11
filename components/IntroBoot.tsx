@@ -38,57 +38,39 @@ export default function IntroBoot() {
       {showIntro && (
         <motion.div
           className="intro-screen"
-          initial={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)", y: 0 }}
-          animate={{
+          initial={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)", y: 0, scale: 1 }}
+          exit={{
             opacity: [1, 1, 0],
             clipPath: [
               "inset(0% 0% 0% 0%)",
               "inset(0% 0% 0% 0%)",
               "inset(0% 0% 100% 0%)"
             ],
-            y: [0, 0, -18]
+            y: [0, 0, -22],
+            scale: [1, 1, 0.985]
           }}
           transition={{
-            duration: reduceMotion ? 0.2 : 1.85,
-            times: [0, 0.74, 1],
+            duration: reduceMotion ? 0.2 : 1.8,
+            times: [0, 0.72, 1],
             ease: [0.22, 1, 0.36, 1]
           }}
         >
           <div className="intro-shell">
-            <div className="intro-meta" aria-label="portfolio identity metadata">
-              <span>AMIT BUILDS</span>
-              <span>DIGITAL EXPERIENCES</span>
-              <span>SYSTEM / 001</span>
-            </div>
-
-            <motion.div
-              className="intro-grid"
-              initial={{ opacity: 0, scale: 1.04 }}
-              animate={{ opacity: [0, 0.9, 0.35], scale: [1.06, 1, 1] }}
-              transition={{
-                duration: reduceMotion ? 0.2 : 0.9,
-                delay: 0.08,
-                times: [0, 0.6, 1],
-                ease: [0.22, 1, 0.36, 1]
-              }}
-            />
+            <div className="intro-glow" aria-hidden="true" />
 
             <div className="intro-word-wrap" aria-label="Amit Builds">
               <motion.span
                 className="intro-word intro-word-shadow"
-                initial={{ opacity: 0, y: 18, clipPath: "inset(0 100% 0 0)" }}
+                initial={{ opacity: 0, filter: "blur(14px)", scale: 1.1, y: 24 }}
                 animate={{
                   opacity: [0, 0.18, 0.18],
-                  y: [18, 0, 0],
-                  clipPath: [
-                    "inset(0 100% 0 0)",
-                    "inset(0 0% 0 0)",
-                    "inset(0 0% 0 0)"
-                  ]
+                  filter: ["blur(14px)", "blur(2px)", "blur(0px)"],
+                  scale: [1.1, 1.03, 1],
+                  y: [24, 6, 0]
                 }}
                 transition={{
-                  duration: reduceMotion ? 0.2 : 0.72,
-                  delay: 0.35,
+                  duration: reduceMotion ? 0.2 : 0.9,
+                  delay: reduceMotion ? 0 : 0.12,
                   ease: [0.22, 1, 0.36, 1]
                 }}
               >
@@ -97,70 +79,53 @@ export default function IntroBoot() {
 
               <motion.span
                 className="intro-word intro-word-reveal"
-                initial={{ opacity: 0, y: 18, clipPath: "inset(0 100% 0 0)" }}
+                initial={{ opacity: 0, filter: "blur(14px)", y: 18, clipPath: "inset(0 100% 0 0 round 10px)" }}
                 animate={{
                   opacity: [0, 1, 1],
-                  y: [18, 0, 0],
+                  filter: ["blur(14px)", "blur(1px)", "blur(0px)"],
+                  y: [18, 6, 0],
                   clipPath: [
-                    "inset(0 100% 0 0)",
-                    "inset(0 0% 0 0)",
-                    "inset(0 0% 0 0)"
+                    "inset(0 100% 0 0 round 10px)",
+                    "inset(0 0% 0 0 round 10px)",
+                    "inset(0 0% 0 0 round 10px)"
                   ]
                 }}
                 transition={{
-                  duration: reduceMotion ? 0.2 : 0.72,
-                  delay: 0.35,
+                  duration: reduceMotion ? 0.2 : 0.95,
+                  delay: reduceMotion ? 0 : 0.12,
                   ease: [0.22, 1, 0.36, 1]
                 }}
               >
                 AMIT BUILDS
               </motion.span>
+
+              <motion.span
+                className="intro-word-sweep"
+                initial={{ opacity: 0, x: "-26%" }}
+                animate={{
+                  opacity: [0, 0.16, 0.16, 0],
+                  x: ["-26%", "0%", "26%", "52%"]
+                }}
+                transition={{
+                  duration: reduceMotion ? 0.2 : 0.9,
+                  delay: reduceMotion ? 0 : 0.28,
+                  ease: [0.22, 1, 0.36, 1]
+                }}
+              />
             </div>
 
             <motion.div
-              className="intro-route"
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{
-                opacity: [0, 1, 1],
-                scaleX: [0, 1, 1]
-              }}
-              transition={{
-                duration: reduceMotion ? 0.2 : 0.8,
-                delay: 0.6,
-                ease: [0.22, 1, 0.36, 1]
-              }}
-            />
-
-            <motion.div
-              className="intro-node"
-              initial={{ opacity: 0, x: 0, y: 0 }}
-              animate={{
-                opacity: [0, 1, 1, 0],
-                x: [0, 220, 270, 280],
-                y: [0, 0, -8, 0]
-              }}
+              className="intro-subtitle"
+              initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{
                 duration: reduceMotion ? 0.2 : 0.75,
-                delay: 0.72,
+                delay: reduceMotion ? 0 : 0.25,
                 ease: [0.22, 1, 0.36, 1]
               }}
-            />
-
-            <motion.span
-              className="intro-shipped"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{
-                opacity: [0, 1, 1],
-                y: [8, 0, 0]
-              }}
-              transition={{
-                duration: reduceMotion ? 0.2 : 0.32,
-                delay: 1.12,
-                ease: "easeOut"
-              }}
             >
-              SHIPPED
-            </motion.span>
+              DIGITAL EXPERIENCES
+            </motion.div>
           </div>
         </motion.div>
       )}
