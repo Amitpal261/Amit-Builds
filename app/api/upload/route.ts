@@ -71,25 +71,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Media must be smaller than 8MB." }, { status: 400 });
   }
 
+  if (!isCloudinaryConfigured) {
+    return NextResponse.json(
+      {
+        error:
+          "Cloudinary is not configured. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET to your .env.local file."
+      },
+      { status: 500 }
+    );
+  }
+
   const bytes = Buffer.from(await file.arrayBuffer());
   const dataUrl = `data:${file.type};base64,${bytes.toString("base64")}`;
 
-  if (isCloudinaryConfigured) {
-    const uploadResult = await cloudinary.uploader.upload(dataUrl, {
-      folder: "amit-portfolio",
-      resource_type: file.type.startsWith("video/") ? "video" : "image",
-      use_filename: true,
-      unique_filename: true
-    });
+  const uploadResult = await cloudinary.uploader.upload(dataUrl, {
+    folder: "amit-portfolio",
+    resource_type: file.type.startsWith("video/") ? "video" : "image",
+    use_filename: true,
+    unique_filename: true
+  });
 
-    return NextResponse.json({
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-      resourceType: uploadResult.resource_type
-    });
-  }
-
-  return NextResponse.json({ url: dataUrl, publicId: "", resourceType: file.type.startsWith("video/") ? "video" : "image" });
+  return NextResponse.json({
+    url: uploadResult.secure_url,
+    publicId: uploadResult.public_id,
+    resourceType: uploadResult.resource_type
+  });
 }
 
 export async function DELETE(req: NextRequest) {

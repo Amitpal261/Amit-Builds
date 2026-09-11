@@ -1,4 +1,11 @@
-import mongoose, { Schema, models, model } from "mongoose";
+import  { Schema, models, model } from "mongoose";
+
+export type GallerySize = "small" | "wide" | "tall" | "full";
+
+export type GalleryItem = {
+  url: string;
+  size: GallerySize;
+};
 
 export interface IProject {
   _id?: string;
@@ -6,7 +13,7 @@ export interface IProject {
   slug: string;
   category: string;
   coverImage: string;
-  gallery: string[];
+  gallery: GalleryItem[];
   description: string;
   problem?: string;
   solution?: string;
@@ -19,13 +26,67 @@ export interface IProject {
   updatedAt?: Date;
 }
 
+function isRemoteMediaUrl(value: string) {
+  return Boolean(value) && !value.startsWith("data:") && !value.startsWith("blob:");
+}
+
+function normalizeGallery(value: unknown): GalleryItem[] {
+  const rawItems: unknown[] = Array.isArray(value)
+    ? value
+    : typeof value === "string"
+      ? (() => {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        })()
+      : [];
+
+  return rawItems
+    .map((item) => {
+      if (typeof item === "string") {
+        const url = item.trim();
+        return isRemoteMediaUrl(url) ? { url, size: "small" as GallerySize } : null;
+      }
+
+      if (item && typeof item === "object" && "url" in item) {
+        const typedItem = item as { url?: unknown; size?: unknown };
+        const url = typeof typedItem.url === "string" ? typedItem.url.trim() : "";
+
+        if (!isRemoteMediaUrl(url)) return null;
+
+        const size =
+          typedItem.size === "full" || typedItem.size === "wide" || typedItem.size === "tall"
+            ? typedItem.size
+            : typedItem.size === "two"
+              ? "wide"
+              : "small";
+        return { url, size: size as GallerySize };
+      }
+
+      return null;
+    })
+    .filter((item): item is GalleryItem => item !== null && Boolean(item.url));
+}
+
 const ProjectSchema = new Schema<IProject>(
   {
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true, lowercase: true },
     category: { type: String, required: true, trim: true },
     coverImage: { type: String, required: true },
-    gallery: { type: [String], default: [] },
+    gallery: {
+      type: [
+        {
+          url: { type: String, required: true, trim: true },
+          size: { type: String, enum: ["small", "wide", "tall", "full"], default: "small" }
+        }
+      ],
+      default: [],
+      set: normalizeGallery
+    },
     description: { type: String, required: true },
     problem: { type: String, default: "" },
     solution: { type: String, default: "" },

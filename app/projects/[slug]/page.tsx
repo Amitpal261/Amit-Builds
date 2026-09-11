@@ -26,6 +26,10 @@ export default async function ProjectDetailPage({ params }: Props) {
   const project = await getProjectBySlug(params.slug);
   if (!project) notFound();
 
+  const galleryItems = (project.gallery || []).map((item) =>
+    typeof item === "string" ? { url: item, size: "small" as const } : { url: item.url, size: item.size || "small" }
+  );
+
   return (
     <>
       <Navbar />
@@ -111,16 +115,16 @@ export default async function ProjectDetailPage({ params }: Props) {
             </div>
           )}
 
-          {project.gallery?.length > 0 && (
-            <div className={`detail-gallery detail-gallery-count-${Math.min(project.gallery.length, 4)}`}>
-              {project.gallery.map((img, i) => (
+          {galleryItems.length > 0 && (
+            <div className={`detail-gallery detail-gallery-count-${Math.min(galleryItems.length, 4)}`}>
+              {galleryItems.map((item, i) => (
                 <div
-                  key={i}
-                  className={`detail-gallery-item${i === 0 ? " detail-gallery-featured" : ""}`}
+                  key={`${item.url}-${i}`}
+                  className={`detail-gallery-item detail-gallery-item-${item.size || "small"}`}
                 >
-                  {isVideoUrl(img) ? (
+                  {isVideoUrl(item.url) ? (
                     <video
-                      src={img}
+                      src={item.url}
                       controls
                       muted
                       playsInline
@@ -129,7 +133,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                     />
                   ) : (
                     <Image
-                      src={img}
+                      src={item.url}
                       alt={`${project.title} screenshot ${i + 1}`}
                       width={1200}
                       height={800}

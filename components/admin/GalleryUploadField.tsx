@@ -2,14 +2,22 @@
 
 import { useState } from "react";
 
-type Props = {
-  value?: string[];
-  onUpload: (urls: string[]) => void;
-  onRemove?: (url: string) => void;
-  onReorder?: (urls: string[]) => void;
+export type GallerySize = "small" | "wide" | "tall" | "full";
+
+export type GalleryItem = {
+  url: string;
+  size: GallerySize;
 };
 
-export default function GalleryUploadField({ value = [], onUpload, onRemove, onReorder }: Props) {
+type Props = {
+  value?: GalleryItem[];
+  onUpload: (items: GalleryItem[]) => void;
+  onRemove?: (url: string) => void;
+  onReorder?: (items: GalleryItem[]) => void;
+  onChangeSize?: (url: string, size: GallerySize) => void;
+};
+
+export default function GalleryUploadField({ value = [], onUpload, onRemove, onReorder, onChangeSize }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -32,7 +40,7 @@ export default function GalleryUploadField({ value = [], onUpload, onRemove, onR
 
     try {
       const urls = await Promise.all(Array.from(files).map(uploadFile));
-      onUpload(urls);
+      onUpload(urls.map((url) => ({ url, size: "small" })));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
@@ -57,14 +65,14 @@ export default function GalleryUploadField({ value = [], onUpload, onRemove, onR
         key={url}
         src={url}
         controls
-        style={{ width: "120px", height: "90px", objectFit: "cover", borderRadius: "8px" }}
+        style={{ width: "100%", height: "auto", objectFit: "contain", borderRadius: "8px", display: "block" }}
       />
     ) : (
       <img
         key={url}
         src={url}
         alt="Gallery preview"
-        style={{ width: "120px", height: "90px", objectFit: "cover", borderRadius: "8px" }}
+        style={{ width: "100%", height: "auto", objectFit: "contain", borderRadius: "8px", display: "block" }}
       />
     );
   }
@@ -97,16 +105,16 @@ export default function GalleryUploadField({ value = [], onUpload, onRemove, onR
       {value.length > 0 && (
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
             gap: "10px",
             marginTop: "12px",
             marginBottom: "8px"
           }}
         >
-          {value.map((url, index) => (
+          {value.map((item, index) => (
             <div
-              key={`${url}-${index}`}
+              key={`${item.url}-${index}`}
               draggable
               onDragStart={() => setDraggedIndex(index)}
               onDragOver={(e) => e.preventDefault()}
@@ -123,10 +131,14 @@ export default function GalleryUploadField({ value = [], onUpload, onRemove, onR
                 border: "1px solid #eaeaea",
                 borderRadius: "8px",
                 padding: "4px",
-                background: "#fff"
+                background: "#fff",
+                gridColumn: item.size === "full" ? "1 / -1" : item.size === "wide" ? "span 2" : "span 1",
+                gridRow: item.size === "tall" ? "span 2" : "span 1",
+                width: "100%",
+                alignSelf: "start"
               }}
             >
-              {renderPreview(url)}
+              {renderPreview(item.url)}
               <div
                 style={{
                   position: "absolute",
@@ -142,10 +154,47 @@ export default function GalleryUploadField({ value = [], onUpload, onRemove, onR
               >
                 {index + 1}
               </div>
+
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  left: "8px",
+                  display: "flex",
+                  gap: "4px",
+                  flexWrap: "wrap"
+                }}
+              >
+                {([
+                  { value: "small", label: "small" },
+                  { value: "wide", label: "wide" },
+                  { value: "tall", label: "tall" },
+                  { value: "full", label: "full" }
+                ] as const).map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => onChangeSize?.(item.url, value)}
+                    style={{
+                      padding: "4px 6px",
+                      fontSize: "9px",
+                      border: item.size === value ? "1px solid #111" : "1px solid rgba(17,17,17,0.25)",
+                      background: item.size === value ? "#111" : "rgba(255,255,255,0.8)",
+                      color: item.size === value ? "#fff" : "#111",
+                      borderRadius: "999px",
+                      cursor: "pointer",
+                      textTransform: "capitalize"
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
               {onRemove && (
                 <button
                   type="button"
-                  onClick={() => onRemove(url)}
+                  onClick={() => onRemove(item.url)}
                   style={{
                     position: "absolute",
                     top: "6px",

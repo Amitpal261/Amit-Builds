@@ -2,14 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IProject } from "@/models/Project";
+import { IProject, type GallerySize } from "@/models/Project";
 import ImageUploadField from "./ImageUploadField";
-import GalleryUploadField from "./GalleryUploadField";
+import GalleryUploadField, { type GalleryItem } from "./GalleryUploadField";
 
 type Props = {
   initial?: Partial<IProject>;
   projectId?: string;
 };
+
+function normalizeGalleryItem(item: unknown): GalleryItem | null {
+  if (!item || typeof item !== "object") return null;
+
+  const candidate = item as { url?: unknown; size?: unknown };
+  if (typeof candidate.url !== "string") return null;
+
+  const url = candidate.url.trim();
+  if (!url) return null;
+
+  const size =
+    candidate.size === "full" || candidate.size === "wide" || candidate.size === "tall"
+      ? candidate.size
+      : candidate.size === "two"
+        ? "wide"
+        : "small";
+  return { url, size: size as GallerySize };
+}
 
 function slugify(text: string) {
   return text
@@ -28,7 +46,12 @@ export default function ProjectForm({ initial, projectId }: Props) {
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [category, setCategory] = useState(initial?.category || "");
   const [coverImage, setCoverImage] = useState(initial?.coverImage || "");
-  const [gallery, setGallery] = useState((initial?.gallery || []).join("\n"));
+  const [gallery, setGallery] = useState<GalleryItem[]>(() =>
+    (initial?.gallery || []).flatMap((item) => {
+      const normalized = normalizeGalleryItem(item);
+      return normalized ? [normalized] : [];
+    })
+  );
   const [description, setDescription] = useState(initial?.description || "");
   const [problem, setProblem] = useState(initial?.problem || "");
   const [solution, setSolution] = useState(initial?.solution || "");
@@ -60,13 +83,7 @@ export default function ProjectForm({ initial, projectId }: Props) {
       return;
     }
 
-    setGallery((current) =>
-      current
-        .split("\n")
-        .map((s) => s.trim())
-        .filter((item) => item !== url)
-        .join("\n")
-    );
+    setGallery((current) => current.filter((item) => item.url !== url));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -79,10 +96,10 @@ export default function ProjectForm({ initial, projectId }: Props) {
       slug: slug || slugify(title),
       category,
       coverImage,
-      gallery: gallery
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean),
+      gallery: (gallery || [])
+        .map((item) => normalizeGalleryItem(item))
+        .filter((item): item is GalleryItem => Boolean(item))
+        .map((item) => ({ url: item.url.trim(), size: item.size })),
       description,
       problem,
       solution,
@@ -164,31 +181,25 @@ export default function ProjectForm({ initial, projectId }: Props) {
       <div>
         <label htmlFor="gallery">Gallery image or video URLs (one per line, optional)</label>
         <GalleryUploadField
-          value={gallery
-            .split("\n")
-            .map((s) => s.trim())
-            .filter(Boolean)}
-          onUpload={(urls) => {
+          value={gallery}
+          onUpload={(items) => {
             setGallery((current) => {
-              const currentUrls = current
-                .split("\n")
-                .map((s) => s.trim())
-                .filter(Boolean);
-              return [...new Set([...currentUrls, ...urls])].join("\n");
+              const currentUrls = current.map((item) => item.url);
+              const merged = [...current, ...items.filter((item) => !currentUrls.includes(item.url))];
+              return merged;
             });
           }}
           onRemove={(url) => {
             void removeGalleryImage(url);
           }}
-          onReorder={(urls) => {
-            setGallery(urls.join("\n"));
+          onReorder={(items) => {
+            setGallery(items);
           }}
-        />
-        <textarea
-          id="gallery"
-          value={gallery}
-          onChange={(e) => setGallery(e.target.value)}
-          placeholder={"https://.../screenshot-1.png\nhttps://.../demo.mp4"}
+          onChangeSize={(url, size) => {
+            setGallery((current) =>
+              current.map((item) => (item.url === url ? { ...item, size } : item))
+            );
+          }}
         />
       </div>
 

@@ -24,7 +24,12 @@ const ProjectSchema = new mongoose.Schema(
     slug: { type: String, unique: true },
     category: String,
     coverImage: String,
-    gallery: [String],
+    gallery: [
+    {
+      url: { type: String, required: true },
+      size: { type: String, enum: ["small", "wide", "tall"], default: "small" }
+    }
+  ],
     description: String,
     problem: String,
     solution: String,
