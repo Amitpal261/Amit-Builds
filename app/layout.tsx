@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Serif, Manrope } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
+import IntroBoot from "@/components/IntroBoot";
 import ScrollNavClass from "@/components/ScrollNavClass";
 
 const serif = Instrument_Serif({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${serif.variable} ${sans.variable}`}>
         <ScrollNavClass />
         <CustomCursor />
+        <IntroBoot />
         {children}
       </body>
     </html>

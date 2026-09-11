@@ -33,6 +33,24 @@ export default function ImageUploadField({
     }
   }
 
+  async function handleDelete() {
+    if (!value) return;
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`/api/upload?url=${encodeURIComponent(value)}`, { method: "DELETE" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Delete failed.");
+      onChange("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <div style={{ marginBottom: "20px" }}>
       <label
@@ -50,19 +68,37 @@ export default function ImageUploadField({
       </label>
 
       {value && (
-        <img
-          src={value}
-          alt="Preview"
-          style={{
-            width: "100%",
-            maxWidth: "320px",
-            aspectRatio: "1.5 / 1",
-            objectFit: "cover",
-            borderRadius: "4px",
-            marginBottom: "10px",
-            border: "1px solid #e9e9e7"
-          }}
-        />
+        <div style={{ marginBottom: "10px" }}>
+          <img
+            src={value}
+            alt="Preview"
+            style={{
+              width: "100%",
+              maxWidth: "320px",
+              aspectRatio: "1.5 / 1",
+              objectFit: "cover",
+              borderRadius: "4px",
+              border: "1px solid #e9e9e7",
+              display: "block"
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              void handleDelete();
+            }}
+            style={{
+              marginTop: "8px",
+              background: "transparent",
+              border: "1px solid #d9d9d9",
+              color: "#333",
+              padding: "6px 10px",
+              cursor: "pointer"
+            }}
+          >
+            Remove image
+          </button>
+        </div>
       )}
 
       <input
@@ -70,7 +106,7 @@ export default function ImageUploadField({
         accept="image/*"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) handleFile(file);
+          if (file) void handleFile(file);
         }}
         disabled={uploading}
       />

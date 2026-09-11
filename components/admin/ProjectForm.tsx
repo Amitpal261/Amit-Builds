@@ -41,6 +41,34 @@ export default function ProjectForm({ initial, projectId }: Props) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
+  async function removeGalleryImage(url: string) {
+    if (!url) return;
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(body.error || "Delete failed.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed.");
+      return;
+    }
+
+    setGallery((current) =>
+      current
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((item) => item !== url)
+        .join("\n")
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -136,8 +164,24 @@ export default function ProjectForm({ initial, projectId }: Props) {
       <div>
         <label htmlFor="gallery">Gallery image or video URLs (one per line, optional)</label>
         <GalleryUploadField
+          value={gallery
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean)}
           onUpload={(urls) => {
-            setGallery((current) => [...current.split("\n"), ...urls].filter(Boolean).join("\n"));
+            setGallery((current) => {
+              const currentUrls = current
+                .split("\n")
+                .map((s) => s.trim())
+                .filter(Boolean);
+              return [...new Set([...currentUrls, ...urls])].join("\n");
+            });
+          }}
+          onRemove={(url) => {
+            void removeGalleryImage(url);
+          }}
+          onReorder={(urls) => {
+            setGallery(urls.join("\n"));
           }}
         />
         <textarea
