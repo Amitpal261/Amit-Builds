@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Lead from "@/models/Lead";
+import { memoryStore } from "@/lib/store";
 import { z } from "zod";
+
+export const dynamic = "force-dynamic";
 
 const leadSchema = z.object({
   name: z.string().min(1),
@@ -12,7 +15,6 @@ const leadSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   const body = await req.json();
   const parsed = leadSchema.safeParse(body);
 
@@ -23,6 +25,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const lead = await Lead.create(parsed.data);
-  return NextResponse.json({ success: true, id: lead._id }, { status: 201 });
+  try {
+    const db = await connectDB();
+    if (db) {
+      const lead = await Lead.create(parsed.data);
+      return NextResponse.json({ success: true, id: lead._id }, { status: 201 });
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Contact POST fallback to memoryStore:", err);
+  }
+
+  const created = memoryStore.createLead(parsed.data);
+  return NextResponse.json({ success: true, id: created._id }, { status: 201 });
 }
+

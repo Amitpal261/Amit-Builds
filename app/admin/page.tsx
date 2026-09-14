@@ -3,21 +3,40 @@ import { connectDB } from "@/lib/mongodb";
 import Project from "@/models/Project";
 import Service from "@/models/Service";
 import Testimonial from "@/models/Testimonial";
-import Lead from "@/models/Lead";
+import Lead, { ILead } from "@/models/Lead";
+import { memoryStore } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  await connectDB();
+  let projectCount = 0;
+  let serviceCount = 0;
+  let testimonialCount = 0;
+  let newLeads = 0;
+  let recentLeads: ILead[] = [];
 
-  const [projectCount, serviceCount, testimonialCount, newLeads] = await Promise.all([
-    Project.countDocuments(),
-    Service.countDocuments(),
-    Testimonial.countDocuments(),
-    Lead.countDocuments({ status: "new" })
-  ]);
+  try {
+    const db = await connectDB();
+    if (db) {
+      [projectCount, serviceCount, testimonialCount, newLeads] = await Promise.all([
+        Project.countDocuments(),
+        Service.countDocuments(),
+        Testimonial.countDocuments(),
+        Lead.countDocuments({ status: "new" })
+      ]);
+      recentLeads = (await Lead.find().sort({ createdAt: -1 }).limit(5).lean()) as unknown as ILead[];
+    } else {
+      throw new Error("No DB connection");
+    }
+  } catch {
+    const counts = memoryStore.getCounts();
+    projectCount = counts.projectCount;
+    serviceCount = counts.serviceCount;
+    testimonialCount = counts.testimonialCount;
+    newLeads = counts.newLeads;
+    recentLeads = memoryStore.getLeads().slice(0, 5);
+  }
 
-  const recentLeads = await Lead.find().sort({ createdAt: -1 }).limit(5).lean();
 
   return (
     <>

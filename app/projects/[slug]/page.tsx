@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getProjectBySlug } from "@/lib/data";
+import { getProjectBySlug, getProjects } from "@/lib/data";
 
 type Props = { params: { slug: string } };
+
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map((p) => ({ slug: p.slug }));
+}
 
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|ogg)(?:$|[?#])/i.test(url);
@@ -31,10 +37,32 @@ export default async function ProjectDetailPage({ params }: Props) {
   );
 
   return (
-    <>
+    <div id="project-detail-page" className="page-shell">
       <Navbar />
       <main>
         <div className="detail-hero container">
+          <div style={{ marginBottom: "20px" }}>
+            <Link
+              href="/projects"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "12px",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "#666",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                background: "#f0f0ee",
+                border: "1px solid var(--line)"
+              }}
+            >
+              ← Back to all projects
+            </Link>
+          </div>
+
           <div className="hero-kicker">
             <span />
             {project.category}
@@ -145,9 +173,18 @@ export default async function ProjectDetailPage({ params }: Props) {
               ))}
             </div>
           )}
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "60px", paddingTop: "30px", borderTop: "1px solid var(--line)", flexWrap: "wrap", gap: "16px" }}>
+            <Link href="/projects" className="button button-light">
+              ← Back to all projects
+            </Link>
+            <Link href="/contact" className="button button-dark">
+              Discuss a similar project ↗
+            </Link>
+          </div>
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

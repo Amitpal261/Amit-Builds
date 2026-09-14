@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { requireAdmin } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8MB
 
 const isCloudinaryConfigured = Boolean(

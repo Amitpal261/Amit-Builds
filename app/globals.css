@@ -3569,3 +3569,413 @@ section {
    button hover effect
 ========================================================= */
 
+/* =========================================================
+   TRAVEL CARD SHOWCASE ARCHETYPE (FROM download (9).jpg)
+========================================================= */
+
+.travel-showcase-section {
+  position: relative;
+  width: 100%;
+  padding: 30px 0 70px;
+}
+
+.travel-header-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 44px;
+  flex-wrap: wrap;
+}
+
+.travel-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.travel-filter-pill {
+  border: 1px solid var(--line);
+  background: #f8f8f6;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.2, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.travel-filter-pill:hover {
+  background: #ffffff;
+  color: #111;
+  border-color: #bbb;
+}
+
+.travel-filter-pill.active {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Cards Grid Layout */
+.travel-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 36px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .travel-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Base Card Shell - thick smooth rounded frame & deep soft shadow */
+.travel-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 38px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 50px -12px rgba(0, 0, 0, 0.12),
+    0 6px 18px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+  transition: transform 0.45s cubic-bezier(0.2, 1, 0.3, 1), box-shadow 0.45s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.travel-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 36px 70px -16px rgba(0, 0, 0, 0.18),
+    0 12px 28px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------------------------------------------------------
+   CARD STYLE A: Immersive Full-Bleed Card (like "New York")
+--------------------------------------------------------- */
+.travel-card-immersive {
+  min-height: 540px;
+  position: relative;
+  border: 6px solid #ffffff;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.card-immersive-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 32px;
+}
+
+.card-immersive-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.75s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.travel-card-immersive:hover .card-immersive-bg img {
+  transform: scale(1.06);
+}
+
+/* Floating translucent heart/save button in top-right */
+.card-floating-action {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.card-floating-action:hover {
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(1.1);
+  color: #111;
+}
+
+.card-floating-action.is-saved {
+  background: #ffffff;
+  color: #e11d48;
+}
+
+/* Frosted glass lower compartment on full-bleed card */
+.card-immersive-content {
+  position: relative;
+  z-index: 5;
+  margin: 12px;
+  padding: 26px 22px 20px;
+  border-radius: 28px;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 24, 39, 0.72) 0%,
+    rgba(15, 20, 28, 0.92) 100%
+  );
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-immersive-title {
+  color: #ffffff;
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.card-immersive-subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Meta rows with tag & airplane icons */
+.card-immersive-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 6px 0 10px;
+  flex-wrap: wrap;
+}
+
+.card-meta-badge-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card-meta-badge-glass svg {
+  opacity: 0.85;
+}
+
+/* Full-width white rounded CTA pill button (like "Search flight") */
+.card-btn-pill-white {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.card-btn-pill-white:hover {
+  background: #f4f4f4;
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  color: #000000;
+}
+
+/* ---------------------------------------------------------
+   CARD STYLE B: Clean Split Dual-Tone Card (like "San Francisco")
+--------------------------------------------------------- */
+.travel-card-split {
+  min-height: 540px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-split-media {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #f1f1ef;
+}
+
+.card-split-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.75s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.travel-card-split:hover .card-split-media img {
+  transform: scale(1.06);
+}
+
+.card-split-body {
+  padding: 24px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.card-split-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-split-title {
+  color: #111111;
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.card-split-subtitle {
+  color: #777777;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.card-split-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0 18px;
+  flex-wrap: wrap;
+}
+
+.card-meta-badge-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #444444;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card-meta-badge-dark svg {
+  color: #888888;
+}
+
+/* Action row: Black pill CTA + circular heart/bookmark button */
+.card-split-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.card-btn-pill-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 50px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.card-btn-pill-dark:hover {
+  background: #000000;
+  transform: scale(1.02);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+.card-btn-circle-action {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1.5px solid #eaeae8;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888888;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.card-btn-circle-action:hover {
+  border-color: #ccc;
+  background: #fafafa;
+  color: #111;
+  transform: scale(1.08);
+}
+
+.card-btn-circle-action.is-saved {
+  border-color: #fda4af;
+  color: #e11d48;
+  background: #fff1f2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .travel-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 420px;
+  }
+
+  .travel-card-immersive,
+  .travel-card-split {
+    min-height: 480px;
+  }
+
+  .card-split-media {
+    height: 240px;
+  }
+}
+

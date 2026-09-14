@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Service from "@/models/Service";
 import { requireAdmin } from "@/lib/auth";
+import { memoryStore } from "@/lib/store";
 import { z } from "zod";
+
+export const dynamic = "force-dynamic";
 
 const serviceSchema = z.object({
   title: z.string().min(1),
@@ -16,9 +19,18 @@ const serviceSchema = z.object({
 });
 
 export async function GET() {
-  await connectDB();
-  const services = await Service.find().sort({ order: 1, createdAt: -1 });
-  return NextResponse.json(services);
+  try {
+    const db = await connectDB();
+    if (db) {
+      const services = await Service.find().sort({ order: 1, createdAt: -1 });
+      if (services.length > 0) {
+        return NextResponse.json(services);
+      }
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Services GET fallback to memoryStore:", err);
+  }
+  return NextResponse.json(memoryStore.getServices());
 }
 
 export async function POST(req: NextRequest) {
@@ -28,7 +40,6 @@ export async function POST(req: NextRequest) {
     return res as Response;
   }
 
-  await connectDB();
   const body = await req.json();
   const parsed = serviceSchema.safeParse(body);
 
@@ -36,6 +47,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const service = await Service.create(parsed.data);
-  return NextResponse.json(service, { status: 201 });
+  try {
+    const db = await connectDB();
+    if (db) {
+      const service = await Service.create(parsed.data);
+      return NextResponse.json(service, { status: 201 });
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Service create fallback to memoryStore:", err);
+  }
+
+  const created = memoryStore.createService(parsed.data);
+  return NextResponse.json(created, { status: 201 });
 }
+

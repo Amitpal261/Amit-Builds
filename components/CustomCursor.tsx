@@ -38,41 +38,23 @@ export default function CustomCursor() {
       raf = requestAnimationFrame(animate);
     };
 
-    document.addEventListener("mousemove", onMove);
-    animate();
-
-    const onEnter = () => ring.classList.add("hover");
-    const onLeave = () => ring.classList.remove("hover");
-
-    const attach = () => {
-      const els = document.querySelectorAll("a, button, .project, .skill");
-      els.forEach((el) => {
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-      });
-      return els;
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest("a, button, .project, .skill, .travel-card, [role='button']")) {
+        ring.classList.add("hover");
+      } else {
+        ring.classList.remove("hover");
+      }
     };
 
-    let els = attach();
-
-    // Re-attach on route/content changes since elements are re-rendered by React.
-    const observer = new MutationObserver(() => {
-      els.forEach((el) => {
-        el.removeEventListener("mouseenter", onEnter);
-        el.removeEventListener("mouseleave", onLeave);
-      });
-      els = attach();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseover", onMouseOver);
+    animate();
 
     return () => {
       document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseover", onMouseOver);
       cancelAnimationFrame(raf);
-      observer.disconnect();
-      els.forEach((el) => {
-        el.removeEventListener("mouseenter", onEnter);
-        el.removeEventListener("mouseleave", onLeave);
-      });
     };
   }, []);
 

@@ -22,7 +22,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <>
+    <div id="home-page" className="page-shell">
       <Navbar />
       <main>
         <Hero />
@@ -37,6 +37,6 @@ export default async function HomePage() {
         <QuoteCTA />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

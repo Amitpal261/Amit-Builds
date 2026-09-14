@@ -17,7 +17,7 @@ export default async function ServicesPage() {
   const services = await getServices();
 
   return (
-    <>
+    <div id="services-page" className="page-shell">
       <Navbar />
       <main>
         <div className="detail-hero container">
@@ -36,6 +36,6 @@ export default async function ServicesPage() {
         <QuoteCTA />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

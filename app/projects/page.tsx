@@ -15,7 +15,7 @@ export default async function ProjectsPage() {
   const projects = await getProjects();
 
   return (
-    <>
+    <div id="projects-page" className="page-shell">
       <Navbar />
       <main>
         <div className="detail-hero container">
@@ -29,9 +29,9 @@ export default async function ProjectsPage() {
             <em>shipped so far.</em>
           </h1>
         </div>
-        <Projects projects={projects} />
+        <Projects projects={projects} showHeading={false} />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Project from "@/models/Project";
 import { requireAdmin } from "@/lib/auth";
+import { memoryStore } from "@/lib/store";
 import { z } from "zod";
+
+export const dynamic = "force-dynamic";
 
 const galleryItemSchema = z.union([
   z.string().trim().min(1),
@@ -57,9 +60,18 @@ const projectSchema = z.object({
 });
 
 export async function GET() {
-  await connectDB();
-  const projects = await Project.find().sort({ order: 1, createdAt: -1 });
-  return NextResponse.json(projects);
+  try {
+    const db = await connectDB();
+    if (db) {
+      const projects = await Project.find().sort({ order: 1, createdAt: -1 });
+      if (projects.length > 0) {
+        return NextResponse.json(projects);
+      }
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Projects GET fallback to memoryStore:", err);
+  }
+  return NextResponse.json(memoryStore.getProjects());
 }
 
 export async function POST(req: NextRequest) {
@@ -69,7 +81,6 @@ export async function POST(req: NextRequest) {
     return res as Response;
   }
 
-  await connectDB();
   const body = await req.json();
   const safeBody = {
     ...body,
@@ -81,20 +92,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  try {
-    const normalized = {
-      ...parsed.data,
-      gallery: parsed.data.gallery.map((item) =>
-        typeof item === "string" ? { url: item, size: "small" } : { url: item.url, size: item.size || "small" }
-      )
-    };
+  const normalized = {
+    ...parsed.data,
+    gallery: parsed.data.gallery.map((item) =>
+      typeof item === "string" ? { url: item, size: "small" as const } : { url: item.url, size: item.size || "small" }
+    )
+  };
 
-    const project = await Project.create(normalized);
-    return NextResponse.json(project, { status: 201 });
+  try {
+    const db = await connectDB();
+    if (db) {
+      const project = await Project.create(normalized);
+      return NextResponse.json(project, { status: 201 });
+    }
   } catch (err: unknown) {
     if (typeof err === "object" && err !== null && "code" in err && err.code === 11000) {
       return NextResponse.json({ error: "A project with this slug already exists." }, { status: 409 });
     }
-    return NextResponse.json({ error: "Failed to create project." }, { status: 500 });
+    console.warn("[AI Studio] Project create fallback to memoryStore:", err);
   }
+
+  const created = memoryStore.createProject(normalized);
+  return NextResponse.json(created, { status: 201 });
 }
+

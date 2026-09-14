@@ -10,27 +10,6 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        id="mobile-navigation"
-        className={`floating-nav${menuOpen ? " mobile-open" : ""}`}
-      >
-        <Link href="/projects" className="nav-link" onClick={closeMenu}>
-          Projects
-        </Link>
-        <Link href="/services" className="nav-link" onClick={closeMenu}>
-          Services
-        </Link>
-        <Link href="/#skills" className="nav-link" onClick={closeMenu}>
-          Skills
-        </Link>
-        <Link href="/#about" className="nav-link" onClick={closeMenu}>
-          About
-        </Link>
-        <Link href="/contact" className="nav-link nav-cta" onClick={closeMenu}>
-          Get a Quote
-        </Link>
-      </nav>
-
       <header className="topbar">
         <div className="container topbar-inner">
           <Link href="/" className="brand">
@@ -64,6 +43,27 @@ export default function Navbar() {
           </button>
         </div>
       </header>
+
+      <nav
+        id="mobile-navigation"
+        className={`floating-nav${menuOpen ? " mobile-open" : ""}`}
+      >
+        <Link href="/projects" className="nav-link" onClick={closeMenu}>
+          Projects
+        </Link>
+        <Link href="/services" className="nav-link" onClick={closeMenu}>
+          Services
+        </Link>
+        <Link href="/#skills" className="nav-link" onClick={closeMenu}>
+          Skills
+        </Link>
+        <Link href="/about" className="nav-link" onClick={closeMenu}>
+          About
+        </Link>
+        <Link href="/contact" className="nav-link nav-cta" onClick={closeMenu}>
+          Get a Quote
+        </Link>
+      </nav>
     </>
   );
 }

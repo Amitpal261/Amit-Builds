@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 
 export default function NotFound() {
   return (
-    <>
+    <div id="not-found-page" className="page-shell">
       <Navbar />
       <main>
         <div className="hero" style={{ minHeight: "60vh" }}>
@@ -25,6 +25,6 @@ export default function NotFound() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

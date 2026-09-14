@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Testimonial from "@/models/Testimonial";
 import { requireAdmin } from "@/lib/auth";
+import { memoryStore } from "@/lib/store";
 import { z } from "zod";
+
+export const dynamic = "force-dynamic";
 
 const testimonialSchema = z.object({
   name: z.string().min(1),
@@ -16,9 +19,18 @@ const testimonialSchema = z.object({
 });
 
 export async function GET() {
-  await connectDB();
-  const testimonials = await Testimonial.find().sort({ order: 1, createdAt: -1 });
-  return NextResponse.json(testimonials);
+  try {
+    const db = await connectDB();
+    if (db) {
+      const testimonials = await Testimonial.find().sort({ order: 1, createdAt: -1 });
+      if (testimonials.length > 0) {
+        return NextResponse.json(testimonials);
+      }
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Testimonials GET fallback to memoryStore:", err);
+  }
+  return NextResponse.json(memoryStore.getTestimonials());
 }
 
 export async function POST(req: NextRequest) {
@@ -28,7 +40,6 @@ export async function POST(req: NextRequest) {
     return res as Response;
   }
 
-  await connectDB();
   const body = await req.json();
   const parsed = testimonialSchema.safeParse(body);
 
@@ -36,6 +47,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const testimonial = await Testimonial.create(parsed.data);
-  return NextResponse.json(testimonial, { status: 201 });
+  try {
+    const db = await connectDB();
+    if (db) {
+      const testimonial = await Testimonial.create(parsed.data);
+      return NextResponse.json(testimonial, { status: 201 });
+    }
+  } catch (err) {
+    console.warn("[AI Studio] Testimonial create fallback to memoryStore:", err);
+  }
+
+  const created = memoryStore.createTestimonial(parsed.data);
+  return NextResponse.json(created, { status: 201 });
 }
+

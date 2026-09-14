@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
+    <div id="contact-page" className="page-shell">
       <Navbar />
       <main>
         <div className="detail-hero container" style={{ paddingBottom: "160px" }}>
@@ -28,6 +28,6 @@ export default function ContactPage() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

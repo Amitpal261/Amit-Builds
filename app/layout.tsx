@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Manrope } from "next/font/google";
 import "./globals.css";
+import ClientSafetyGuard from "@/components/ClientSafetyGuard";
 import CustomCursor from "@/components/CustomCursor";
 import IntroBoot from "@/components/IntroBoot";
 import ScrollNavClass from "@/components/ScrollNavClass";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${serif.variable} ${sans.variable}`}>
+        <ClientSafetyGuard />
         <ScrollNavClass />
         <CustomCursor />
         <IntroBoot />
