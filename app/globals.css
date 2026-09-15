@@ -3816,39 +3816,49 @@ section {
 }
 
 /* ---------------------------------------------------------
-   CARD STYLE B: Clean Split Dual-Tone Card (like "San Francisco")
+   CARD STYLE: Clean Split Dual-Tone Card (San Francisco Style)
 --------------------------------------------------------- */
 .travel-card-split {
-  min-height: 540px;
-  padding: 12px;
+  padding: 14px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
+}
+
+.card-split-media-link {
+  display: block;
+  text-decoration: none;
+  width: 100%;
 }
 
 .card-split-media {
   position: relative;
   width: 100%;
-  height: 280px;
-  border-radius: 28px;
+  aspect-ratio: 16 / 10;
+  min-height: 220px;
+  border-radius: 26px;
   overflow: hidden;
-  background: #f1f1ef;
+  background: #f3f3f0;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.card-split-media img {
+.card-split-media img,
+.card-media-real-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.75s cubic-bezier(0.2, 1, 0.3, 1);
+  object-position: top center;
+  transition: transform 0.65s cubic-bezier(0.2, 1, 0.3, 1);
 }
 
-.travel-card-split:hover .card-split-media img {
-  transform: scale(1.06);
+.travel-card-split:hover .card-split-media img,
+.travel-card-split:hover .card-media-real-img {
+  transform: scale(1.04);
 }
 
 .card-split-body {
-  padding: 24px 12px 10px;
+  padding: 22px 10px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -3864,25 +3874,35 @@ section {
 .card-split-title {
   color: #111111;
   font-family: var(--sans);
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.025em;
-  line-height: 1.15;
+  line-height: 1.2;
   margin: 0;
+}
+
+.card-split-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.card-split-title a:hover {
+  color: #000000;
 }
 
 .card-split-subtitle {
   color: #777777;
   font-size: 13px;
   font-weight: 500;
-  margin: 0;
+  margin: 2px 0 0;
 }
 
 .card-split-meta {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 12px 0 18px;
+  margin: 14px 0 18px;
   flex-wrap: wrap;
 }
 
@@ -3969,13 +3989,12 @@ section {
     max-width: 420px;
   }
 
-  .travel-card-immersive,
   .travel-card-split {
-    min-height: 480px;
+    min-height: auto;
   }
 
   .card-split-media {
-    height: 240px;
+    min-height: 200px;
   }
 }
 

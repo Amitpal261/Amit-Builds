@@ -236,99 +236,37 @@ export default function Projects({ projects, showHeading = true }: ProjectsProps
         )}
 
         {/* =========================================================
-            CARD SHOWCASE (Exact Archetype from download (9).jpg)
+            CARD SHOWCASE: Unified Clean Split Dual-Tone Card (Style B)
            ========================================================= */}
         {viewMode === "cards" && (
           <div className="travel-cards-grid">
-            {filteredProjects.map((project, idx) => {
+            {filteredProjects.map((project) => {
               const projectId = project._id || project.slug;
               const isLiked = !!likedIds[projectId];
               const projectHref = `/projects/${project.slug}`;
-              // Alternate between Style A (Immersive Glass Card) and Style B (Split Card)
-              const isImmersive = idx % 2 === 0;
 
-              if (isImmersive) {
-                // ==========================================
-                // STYLE A: Immersive Full-Bleed Card (New York Style)
-                // ==========================================
-                return (
-                  <article key={projectId} className="travel-card travel-card-immersive">
-                    {/* Background photo */}
-                    <div className="card-immersive-bg">
+              return (
+                <article key={projectId} className="travel-card travel-card-split">
+                  {/* Inset Rounded Photo / Real Proportional Cover Preview */}
+                  <Link href={projectHref} className="card-split-media-link" tabIndex={-1}>
+                    <div className="card-split-media">
                       <Image
                         src={project.coverImage}
                         alt={project.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         unoptimized
+                        className="card-media-real-img"
                       />
                     </div>
-
-                    {/* Floating frosted glass heart/bookmark button */}
-                    <button
-                      type="button"
-                      className={`card-floating-action${isLiked ? " is-saved" : ""}`}
-                      aria-label={isLiked ? "Remove bookmark" : "Bookmark project"}
-                      onClick={(e) => toggleLike(projectId, e)}
-                    >
-                      <Heart
-                        style={{
-                          width: 18,
-                          height: 18,
-                          fill: isLiked ? "#e11d48" : "none",
-                          stroke: isLiked ? "#e11d48" : "currentColor"
-                        }}
-                      />
-                    </button>
-
-                    {/* Lower Frosted Glass Overlay */}
-                    <div className="card-immersive-content">
-                      <h3 className="card-immersive-title">{project.title}</h3>
-                      <p className="card-immersive-subtitle">
-                        {project.category} · Web Application
-                      </p>
-
-                      {/* Meta Tags Row: Tag Icon & Airplane Icon */}
-                      <div className="card-immersive-meta">
-                        <span className="card-meta-badge-glass">
-                          <Tag style={{ width: 14, height: 14 }} />
-                          {getTechLabel(project)}
-                        </span>
-                        <span className="card-meta-badge-glass">
-                          <Plane style={{ width: 14, height: 14 }} />
-                          {getMetricLabel(project)}
-                        </span>
-                      </div>
-
-                      {/* Full-width White Rounded Pill CTA Button */}
-                      <Link href={projectHref} className="card-btn-pill-white">
-                        Explore Project ↗
-                      </Link>
-                    </div>
-                  </article>
-                );
-              }
-
-              // ==========================================
-              // STYLE B: Clean Split Dual-Tone Card (San Francisco Style)
-              // ==========================================
-              return (
-                <article key={projectId} className="travel-card travel-card-split">
-                  {/* Inset Rounded Photo */}
-                  <div className="card-split-media">
-                    <Image
-                      src={project.coverImage}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      unoptimized
-                    />
-                  </div>
+                  </Link>
 
                   {/* Clean White Lower Container */}
                   <div className="card-split-body">
                     <div className="card-split-info">
-                      <h3 className="card-split-title">{project.title}</h3>
+                      <h3 className="card-split-title">
+                        <Link href={projectHref}>{project.title}</Link>
+                      </h3>
                       <p className="card-split-subtitle">
                         {project.category} · Production Build
                       </p>

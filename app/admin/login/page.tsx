@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 function LoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +31,7 @@ function LoginForm() {
       }
 
       const redirectTo = params.get("from") || "/admin";
-      router.push(redirectTo);
-      router.refresh();
+      window.location.href = redirectTo;
     } catch {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -55,6 +53,7 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@amit.dev"
             />
           </div>
 
@@ -66,6 +65,7 @@ function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
             />
           </div>
 
@@ -74,6 +74,10 @@ function LoginForm() {
           <button type="submit" className="button button-dark" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </button>
+
+          <p style={{ fontSize: "12px", color: "var(--muted)", marginTop: "12px", textAlign: "center" }}>
+            Demo credentials: <strong>admin@amit.dev</strong> / <strong>admin123</strong>
+          </p>
         </form>
       </div>
     </div>
